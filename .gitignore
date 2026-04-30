@@ -1,0 +1,5 @@
+.DS_Store
+.netlify/
+recovery-backups/
+netlify-pulled/
+*.zip

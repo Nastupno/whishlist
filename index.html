@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wishlist</title>
+    <link rel="stylesheet" href="styles.css?v=20260430-restore4" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <a class="brand" href="#/" aria-label="Wishlist">
+          <span class="brand-board" aria-hidden="true">
+            <span class="brand-wave"></span>
+            <span class="brand-board-text">Wishlist board</span>
+          </span>
+        </a>
+        <div class="topbar-actions">
+          <button class="editor-mode-button" id="editorModeButton" type="button" aria-pressed="false">
+            Editor
+          </button>
+          <button class="icon-button arrange-button" id="arrangeButton" type="button" aria-label="Переместить подарки" title="Переместить подарки" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8 3 5 6l3 3" />
+              <path d="M5 6h14" />
+              <path d="m16 15 3 3-3 3" />
+              <path d="M19 18H5" />
+            </svg>
+          </button>
+          <button class="icon-button accent" id="newGiftButton" type="button" aria-label="Добавить подарок" title="Добавить подарок">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <main id="appRoot" class="page" aria-live="polite"></main>
+    </div>
+
+    <template id="homeTemplate">
+      <section class="home">
+        <div class="home-board">
+          <div class="ambient-waves" aria-hidden="true">
+            <span class="ambient-wave ambient-wave-one"></span>
+            <span class="ambient-wave ambient-wave-two"></span>
+            <span class="ambient-wave ambient-wave-three"></span>
+          </div>
+
+          <div class="wish-hero">
+            <div class="hero-copy">
+              <div class="title-print">
+                <svg class="wave-print wave-print-wide" viewBox="0 0 180 72" aria-hidden="true">
+                  <path d="M7 50C20 22 36 9 51 32C64 51 80 61 98 37C119 8 150 16 169 43C184 65 147 70 119 58C93 46 79 46 55 62C31 76-3 70 7 50Z" />
+                </svg>
+                <p class="eyebrow">Wishlist board</p>
+                <svg class="wave-print wave-print-small" viewBox="0 0 122 62" aria-hidden="true">
+                  <path d="M6 45C17 18 38 11 48 35C57 56 76 56 87 31C98 6 120 17 118 40C116 59 94 64 73 53C55 44 44 44 28 55C14 64-2 61 6 45Z" />
+                </svg>
+              </div>
+              <h1>Things I’d like to have</h1>
+            </div>
+            <div class="hero-side">
+              <div class="hero-tools">
+                <div class="hero-meta">
+                  <span class="count-pill"><strong id="giftCount">0</strong> <span id="giftCountWord">подарков</span></span>
+                </div>
+                <button class="secondary-button share-button" id="shareWishlistButton" type="button" aria-label="Скопировать ссылку" title="Скопировать ссылку">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7" />
+                    <path d="M12 16V4" />
+                    <path d="m7 9 5-5 5 5" />
+                  </svg>
+                  Поделиться
+                </button>
+                <button class="primary-button" id="addGiftFromHome" type="button" aria-label="Добавить" title="Добавить" aria-expanded="false" aria-controls="addChoiceMenu">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 5v14M5 12h14" />
+                  </svg>
+                  Добавить
+                </button>
+              </div>
+              <div class="add-choice-menu" id="addChoiceMenu" hidden>
+                <button class="add-choice add-choice--present" id="addPresentButton" type="button">Present</button>
+                <button class="add-choice add-choice--disclaimer" id="addDisclaimerButton" type="button">Disclaimer</button>
+              </div>
+              <button class="disclaimer-hero-button" id="heroDisclaimerButton" type="button" hidden>
+                Disclaimer
+              </button>
+            </div>
+          </div>
+
+          <p class="share-status" id="shareStatus" role="status"></p>
+          <div class="share-panel" id="sharePanel" hidden>
+            <label class="share-label" for="shareLinkInput">Моя ссылка на Wishlist</label>
+            <a class="share-pretty-link" id="prettyShareLink" href="#" target="_blank" rel="noreferrer">
+              Мой Wishlist
+            </a>
+            <div class="share-copy-row">
+              <input id="shareLinkInput" type="text" readonly />
+              <button class="secondary-button" id="copyShareLinkButton" type="button">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M8 8h11v13H8z" />
+                  <path d="M5 16H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1v1" />
+                </svg>
+                Копировать
+              </button>
+            </div>
+          </div>
+          <div id="giftGrid" class="gift-mosaic" aria-label="Подарки"></div>
+        </div>
+      </section>
+    </template>
+
+    <template id="emptyTemplate">
+      <section class="empty-state">
+        <div class="empty-art" aria-hidden="true">
+          <svg viewBox="0 0 80 80">
+            <path d="M16 34h48v34H16z" />
+            <path d="M12 24h56v12H12zM40 24v44M27 24c-8-7-3-16 5-13 5 2 8 13 8 13M53 24c8-7 3-16-5-13-5 2-8 13-8 13" />
+          </svg>
+        </div>
+        <h2>Подарков пока нет</h2>
+        <button class="primary-button" id="addFirstGift" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          Добавить подарок
+        </button>
+      </section>
+    </template>
+
+    <template id="formTemplate">
+      <section class="form-page">
+        <div class="form-heading">
+          <button class="icon-button" id="backButton" type="button" aria-label="Назад" title="Назад">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+          </button>
+          <div>
+            <p class="eyebrow" id="formMode">Новый подарок</p>
+            <h1 id="formTitle">Добавить подарок</h1>
+          </div>
+        </div>
+
+        <form class="gift-form" id="giftForm" novalidate>
+          <div class="photo-field">
+            <input id="photoInput" name="photo" type="file" accept="image/*" />
+            <label class="photo-dropzone" for="photoInput">
+              <span class="photo-preview" id="photoPreview">
+                <svg viewBox="0 0 64 64" aria-hidden="true">
+                  <path d="M10 16h44v34H10z" />
+                  <path d="m17 43 12-12 9 9 5-5 10 8" />
+                  <path d="M43 24h.01" />
+                </svg>
+              </span>
+              <span class="photo-copy">Прикрепить фото</span>
+            </label>
+          </div>
+
+          <div class="fields">
+            <label>
+              <span>Название</span>
+              <input id="nameInput" name="name" type="text" autocomplete="off" maxlength="80" required />
+            </label>
+
+            <label>
+              <span>Ссылка</span>
+              <input id="linkInput" name="link" type="url" autocomplete="off" placeholder="https://..." />
+            </label>
+
+            <label>
+              <span>Цена</span>
+              <div class="price-input">
+                <input id="priceInput" name="price" type="number" inputmode="decimal" min="0" step="0.01" />
+                <span aria-hidden="true">₽</span>
+              </div>
+            </label>
+
+            <fieldset class="style-field">
+              <legend>Форма</legend>
+              <input id="variantInput" name="variant" type="hidden" value="wide" />
+              <div class="style-options" id="variantOptions">
+                <button class="shape-option is-selected" type="button" data-value="wide" aria-pressed="true">
+                  <span class="shape-preview shape-preview--wide"></span>
+                </button>
+                <button class="shape-option" type="button" data-value="capsule" aria-pressed="false">
+                  <span class="shape-preview shape-preview--capsule"></span>
+                </button>
+                <button class="shape-option" type="button" data-value="circle" aria-pressed="false">
+                  <span class="shape-preview shape-preview--circle"></span>
+                </button>
+                <button class="shape-option" type="button" data-value="oval" aria-pressed="false">
+                  <span class="shape-preview shape-preview--oval"></span>
+                </button>
+                <button class="shape-option" type="button" data-value="ticket" aria-pressed="false">
+                  <span class="shape-preview shape-preview--ticket"></span>
+                </button>
+                <button class="shape-option" type="button" data-value="stamp" aria-pressed="false">
+                  <span class="shape-preview shape-preview--stamp"></span>
+                </button>
+              </div>
+            </fieldset>
+
+            <fieldset class="style-field">
+              <legend>Размер</legend>
+              <input id="sizeInput" name="size" type="hidden" value="normal" />
+              <div class="size-options" id="sizeOptions">
+                <button class="size-option" type="button" data-value="small" aria-pressed="false">S</button>
+                <button class="size-option is-selected" type="button" data-value="normal" aria-pressed="true">M</button>
+                <button class="size-option" type="button" data-value="large" aria-pressed="false">L</button>
+              </div>
+            </fieldset>
+
+            <label class="wide">
+              <span>Комментарий</span>
+              <textarea id="commentInput" name="comment" rows="5" maxlength="500"></textarea>
+            </label>
+          </div>
+
+          <p class="form-error" id="formError" role="alert"></p>
+
+          <div class="form-actions">
+            <button class="secondary-button" id="cancelButton" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m15 18-6-6 6-6" />
+              </svg>
+              Назад
+            </button>
+            <button class="primary-button" type="submit">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z" />
+                <path d="M17 21v-8H7v8M7 3v5h8" />
+              </svg>
+              Сохранить
+            </button>
+          </div>
+        </form>
+      </section>
+    </template>
+
+    <template id="disclaimerTemplate">
+      <section class="form-page">
+        <div class="form-heading">
+          <button class="icon-button" id="disclaimerBackButton" type="button" aria-label="Назад" title="Назад">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+          </button>
+          <div>
+            <p class="eyebrow">Wishlist board</p>
+            <h1>Disclaimer</h1>
+          </div>
+        </div>
+
+        <form class="gift-form disclaimer-form" id="disclaimerForm" novalidate>
+          <label class="disclaimer-field">
+            <span>Текст disclaimer</span>
+            <textarea id="disclaimerInput" name="disclaimer" rows="8" maxlength="900" placeholder="Напиши текст, который должен открываться в Disclaimer"></textarea>
+          </label>
+
+          <p class="form-error" id="disclaimerError" role="alert"></p>
+
+          <div class="form-actions">
+            <button class="secondary-button" id="deleteDisclaimerButton" type="button">
+              Удалить
+            </button>
+            <button class="secondary-button" id="cancelDisclaimerButton" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m15 18-6-6 6-6" />
+              </svg>
+              Назад
+            </button>
+            <button class="primary-button" type="submit">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z" />
+                <path d="M17 21v-8H7v8M7 3v5h8" />
+              </svg>
+              Сохранить
+            </button>
+          </div>
+        </form>
+      </section>
+    </template>
+
+    <script src="app.js?v=20260430-restore4"></script>
+  </body>
+</html>
