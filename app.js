@@ -1612,16 +1612,12 @@ async function shareWishlist() {
     return;
   }
 
-  const shareLink = areDefaultGifts(gifts) ? getPublicWishlistUrl() : createShareLink(gifts);
+  const shareLink = getPublicWishlistUrl();
   showShareLink(shareLink);
 
   try {
     await navigator.clipboard.writeText(shareLink);
-    setShareStatus(
-      shareLink.length > 120000
-        ? "Ссылка скопирована, но из-за фото она получилась длинной."
-        : "Ссылка с подарками скопирована.",
-    );
+    setShareStatus("Короткая ссылка скопирована.");
   } catch {
     setShareStatus("Ссылка готова. Скопируй её из поля ниже.");
   }
