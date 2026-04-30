@@ -1384,7 +1384,7 @@ function repairGiftLayoutsIfNeeded(gifts) {
 
 function normalizeGiftLayout(layout) {
   const width = clamp(Number(layout.w) || 31, 18, 48);
-  const height = clamp(Number(layout.h) || 280, 170, 380);
+  const height = clamp(Number(layout.h) || 280, 150, 680);
 
   return {
     x: roundLayoutValue(clamp(Number(layout.x) || 0, 0, Math.max(0, 100 - width))),
@@ -1401,13 +1401,13 @@ function getResponsiveGiftLayout(layout) {
   const maxWidth = width < 560 ? 92 : width < 900 ? 68 : 48;
   const displayWidth = clamp(layout.w, minWidth, maxWidth);
   const displayX = clamp(layout.x, 0, Math.max(0, 100 - displayWidth));
-  const maxHeight = width < 560 ? 520 : width < 900 ? 430 : 380;
+  const maxHeight = width < 560 ? 620 : width < 900 ? 620 : 680;
 
   return {
     x: displayX,
     y: Math.round(layout.y * scale),
     w: displayWidth,
-    h: Math.round(clamp(layout.h, 170, maxHeight) * scale),
+    h: Math.round(clamp(layout.h, 150, maxHeight) * scale),
     scale,
   };
 }
@@ -1456,7 +1456,7 @@ function updateCardSize(card, startLayout, deltaX, deltaY) {
   const scale = Number(card.dataset.layoutScale) || 1;
   const startWidthPx = (startLayout.w / 100) * gridWidth;
   const nextWidthPx = clamp(startWidthPx + deltaX, 160, gridWidth * 0.48);
-  const nextHeight = clamp(startLayout.h * scale + deltaY, 120, 560 * scale);
+  const nextHeight = clamp(startLayout.h * scale + deltaY, 120, 680 * scale);
   const maxWidthPct = Math.max(12, 100 - startLayout.x);
   const nextWidthPct = clamp((nextWidthPx / gridWidth) * 100, 16, maxWidthPct);
 
@@ -1465,7 +1465,6 @@ function updateCardSize(card, startLayout, deltaX, deltaY) {
 }
 
 function saveGiftLayout(id, layout) {
-  const scrollY = window.scrollY;
   const gifts = getGifts();
   const safeLayout = normalizeGiftLayout(layout);
   const nextGifts = gifts.map((gift) =>
@@ -1479,8 +1478,6 @@ function saveGiftLayout(id, layout) {
   );
 
   saveGifts(nextGifts);
-  renderHome();
-  requestAnimationFrame(() => window.scrollTo(window.scrollX, scrollY));
 }
 
 function cycleGiftVariant(id) {
