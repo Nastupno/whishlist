@@ -534,7 +534,7 @@ function renderHome() {
 
   gifts = repairGiftLayoutsIfNeeded(gifts);
 
-  const hasFreeLayout = isArrangeMode && isEditorMode;
+  const hasFreeLayout = false;
   grid.classList.toggle("gift-mosaic--free", hasFreeLayout);
   grid.replaceChildren(...gifts.map((gift, index) => createGiftCard(gift, index, hasFreeLayout)));
   if (hasFreeLayout) {
@@ -749,6 +749,26 @@ function createArrangeControls(gift) {
     event.stopPropagation();
   });
 
+  const upButton = document.createElement("button");
+  upButton.type = "button";
+  upButton.textContent = "↑";
+  upButton.title = "Выше";
+  upButton.setAttribute("aria-label", "Переместить выше");
+  upButton.addEventListener("click", (event) => {
+    event.stopPropagation();
+    moveGift(gift.id, -1);
+  });
+
+  const downButton = document.createElement("button");
+  downButton.type = "button";
+  downButton.textContent = "↓";
+  downButton.title = "Ниже";
+  downButton.setAttribute("aria-label", "Переместить ниже");
+  downButton.addEventListener("click", (event) => {
+    event.stopPropagation();
+    moveGift(gift.id, 1);
+  });
+
   const shapeButton = document.createElement("button");
   shapeButton.type = "button";
   shapeButton.textContent = "Ф";
@@ -769,7 +789,7 @@ function createArrangeControls(gift) {
     cycleGiftSize(gift.id);
   });
 
-  controls.append(shapeButton, sizeButton);
+  controls.append(upButton, downButton, shapeButton, sizeButton);
   return controls;
 }
 
@@ -1222,6 +1242,11 @@ function handleGiftPointerDown(event) {
   }
 
   const card = event.currentTarget;
+
+  if (!card.classList.contains("is-free-position")) {
+    return;
+  }
+
   const layout = getLayoutFromCard(card);
 
   event.preventDefault();
@@ -1301,6 +1326,10 @@ function handleGiftResizePointerDown(event) {
   const card = event.currentTarget.closest(".gift-card");
 
   if (!card) {
+    return;
+  }
+
+  if (!card.classList.contains("is-free-position")) {
     return;
   }
 
@@ -1589,6 +1618,23 @@ function reorderGifts(sourceId, targetId, clientX = 0, clientY = 0) {
   gifts.splice(Math.max(0, Math.min(insertIndex, gifts.length)), 0, sourceGift);
   saveGifts(gifts.map((gift, index) => ({ ...gift, order: index, updatedAt: Date.now() })));
   renderHome();
+}
+
+function moveGift(id, direction) {
+  const scrollY = window.scrollY;
+  const gifts = getOrderedGifts();
+  const currentIndex = gifts.findIndex((gift) => gift.id === id);
+  const nextIndex = currentIndex + direction;
+
+  if (currentIndex < 0 || nextIndex < 0 || nextIndex >= gifts.length) {
+    return;
+  }
+
+  const [gift] = gifts.splice(currentIndex, 1);
+  gifts.splice(nextIndex, 0, gift);
+  saveGifts(gifts.map((item, index) => ({ ...item, order: index, updatedAt: Date.now() })));
+  renderHome();
+  requestAnimationFrame(() => window.scrollTo(window.scrollX, scrollY));
 }
 
 function toggleGiftMarked(id) {
