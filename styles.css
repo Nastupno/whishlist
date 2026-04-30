@@ -876,6 +876,11 @@ h2 {
   pointer-events: auto;
 }
 
+.arrange-card-controls button[aria-label="Переместить выше"],
+.arrange-card-controls button[aria-label="Переместить ниже"] {
+  display: none;
+}
+
 .is-arranging .arrange-card-controls {
   display: inline-flex;
 }
