@@ -170,6 +170,11 @@ const DEFAULT_GIFTS = [
   },
 ];
 
+const PUBLISHED_WISHLIST =
+  window.WISHLIST_DATA && typeof window.WISHLIST_DATA === "object" ? window.WISHLIST_DATA : {};
+const PUBLIC_GIFTS = Array.isArray(PUBLISHED_WISHLIST.gifts) ? PUBLISHED_WISHLIST.gifts : DEFAULT_GIFTS;
+const PUBLIC_DISCLAIMER = String(PUBLISHED_WISHLIST.disclaimer || "").trim();
+
 const LEGACY_DEFAULT_GIFT_IDS = new Set([
   "744fac7e-fcff-489b-b6be-87f97bada8c8",
   "62b09974-473d-48c5-8460-e7501fbf725f",
@@ -378,7 +383,7 @@ function getGifts() {
         return seedDefaultGifts();
       }
 
-      if (!parsed.length && DEFAULT_GIFTS.length && !localStorage.getItem(DEFAULTS_SEEDED_KEY)) {
+      if (!parsed.length && PUBLIC_GIFTS.length && !localStorage.getItem(DEFAULTS_SEEDED_KEY)) {
         return seedDefaultGifts();
       }
 
@@ -396,7 +401,9 @@ function saveGifts(gifts) {
 }
 
 function getDisclaimer() {
-  return String(localStorage.getItem(DISCLAIMER_KEY) || "").trim();
+  const stored = localStorage.getItem(DISCLAIMER_KEY);
+
+  return stored === null ? PUBLIC_DISCLAIMER : String(stored || "").trim();
 }
 
 function saveDisclaimer(disclaimer) {
@@ -448,7 +455,7 @@ function saveGiftVisitorComment(giftId, text) {
 }
 
 function seedDefaultGifts() {
-  const gifts = DEFAULT_GIFTS.map((gift, index) => ({ ...gift, order: index }));
+  const gifts = PUBLIC_GIFTS.map((gift, index) => ({ ...gift, order: Number.isFinite(gift.order) ? gift.order : index }));
 
   saveGifts(gifts);
   localStorage.setItem(DEFAULTS_SEEDED_KEY, "1");
@@ -457,11 +464,11 @@ function seedDefaultGifts() {
 }
 
 function shouldRefreshDefaultGifts(gifts) {
-  if (!gifts.length || gifts.length > DEFAULT_GIFTS.length) {
+  if (!gifts.length || gifts.length > PUBLIC_GIFTS.length) {
     return false;
   }
 
-  const defaultGiftIds = new Set(DEFAULT_GIFTS.map((gift) => gift.id));
+  const defaultGiftIds = new Set(PUBLIC_GIFTS.map((gift) => gift.id));
   const hasOnlyLegacyDefaults = gifts.every((gift) => LEGACY_DEFAULT_GIFT_IDS.has(gift.id));
 
   if (hasOnlyLegacyDefaults) {
@@ -1676,12 +1683,12 @@ function getShareableGift(gift) {
 }
 
 function areDefaultGifts(gifts) {
-  if (gifts.length !== DEFAULT_GIFTS.length) {
+  if (gifts.length !== PUBLIC_GIFTS.length) {
     return false;
   }
 
   const currentGifts = gifts.map(getShareableGift).sort((a, b) => a.id.localeCompare(b.id));
-  const defaultGifts = DEFAULT_GIFTS.map((gift, index) => getShareableGift({ ...gift, order: index })).sort((a, b) =>
+  const defaultGifts = PUBLIC_GIFTS.map((gift, index) => getShareableGift({ ...gift, order: Number.isFinite(gift.order) ? gift.order : index })).sort((a, b) =>
     a.id.localeCompare(b.id),
   );
 
