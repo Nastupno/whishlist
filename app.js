@@ -457,15 +457,20 @@ function seedDefaultGifts() {
 }
 
 function shouldRefreshDefaultGifts(gifts) {
-  if (localStorage.getItem(DEFAULTS_VERSION_KEY) === CURRENT_DEFAULTS_VERSION) {
-    return false;
-  }
-
   if (!gifts.length || gifts.length > DEFAULT_GIFTS.length) {
     return false;
   }
 
   const defaultGiftIds = new Set(DEFAULT_GIFTS.map((gift) => gift.id));
+  const hasOnlyLegacyDefaults = gifts.every((gift) => LEGACY_DEFAULT_GIFT_IDS.has(gift.id));
+
+  if (hasOnlyLegacyDefaults) {
+    return true;
+  }
+
+  if (localStorage.getItem(DEFAULTS_VERSION_KEY) === CURRENT_DEFAULTS_VERSION) {
+    return false;
+  }
 
   return gifts.every((gift) => defaultGiftIds.has(gift.id) || LEGACY_DEFAULT_GIFT_IDS.has(gift.id));
 }
