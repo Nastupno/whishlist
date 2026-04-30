@@ -503,6 +503,7 @@ function renderHome() {
   addButton.hidden = !isEditorMode;
   addMenu.hidden = true;
   document.querySelector("#shareWishlistButton").hidden = !isEditorMode;
+  document.querySelector("#exportWishlistDataButton").hidden = !isEditorMode;
   addButton.addEventListener("click", () => {
     if (!isEditorMode) {
       return;
@@ -524,6 +525,7 @@ function renderHome() {
   });
   heroDisclaimerButton.hidden = !disclaimer;
   document.querySelector("#shareWishlistButton").addEventListener("click", shareWishlist);
+  document.querySelector("#exportWishlistDataButton").addEventListener("click", exportWishlistData);
   document.querySelector("#copyShareLinkButton").addEventListener("click", copyVisibleShareLink);
   document.querySelector("#shareLinkInput").addEventListener("focus", (event) => {
     event.target.select();
@@ -1647,6 +1649,26 @@ async function copyVisibleShareLink() {
   } catch {
     setShareStatus("Не получилось скопировать автоматически. Ссылка выделена.");
   }
+}
+
+function exportWishlistData() {
+  const data = {
+    version: new Date().toISOString(),
+    disclaimer: getDisclaimer(),
+    gifts: getGifts().map(getShareableGift),
+  };
+  const js = `window.WISHLIST_DATA = ${JSON.stringify(data, null, 2)};\n`;
+  const blob = new Blob([js], { type: "text/javascript;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = "wishlist-data.js";
+  document.body.append(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+  setShareStatus("Файл wishlist-data.js скачан. Его можно опубликовать в GitHub.");
 }
 
 function createShareLink(gifts) {
