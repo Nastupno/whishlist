@@ -2,6 +2,7 @@ const STORAGE_KEY = "wishlist:gifts";
 const DISCLAIMER_KEY = "wishlist:disclaimer";
 const EDITOR_MODE_KEY = "wishlist:editorMode";
 const VISITOR_COMMENTS_KEY = "wishlist:visitorComments";
+const GITHUB_TOKEN_KEY = "wishlist:githubToken";
 const SHARE_NOTICE_KEY = "wishlist:shareNotice";
 const DEFAULTS_SEEDED_KEY = "wishlist:defaultsSeeded";
 const DEFAULTS_VERSION_KEY = "wishlist:defaultsVersion";
@@ -9,6 +10,10 @@ const CURRENT_DEFAULTS_VERSION = "2026-05-01-wishlist-1";
 const LAYOUT_REPAIR_VERSION_KEY = "wishlist:layoutRepairVersion";
 const CURRENT_LAYOUT_REPAIR_VERSION = "2026-04-30-restore4";
 const FREE_LAYOUT_BASE_WIDTH = 1120;
+const GITHUB_OWNER = "Nastupno";
+const GITHUB_REPO = "whishlist";
+const GITHUB_BRANCH = "main";
+const GITHUB_DATA_PATH = "wishlist-data.js";
 
 const DEFAULT_GIFTS = [
   {
@@ -245,6 +250,8 @@ let isArrangeMode = false;
 let draggedGiftId = "";
 let pointerDrag = null;
 let isEditorMode = localStorage.getItem(EDITOR_MODE_KEY) === "true";
+let githubPublishTimer = 0;
+let githubPublishInFlight = false;
 
 newGiftButton.addEventListener("click", () => {
   if (!isEditorMode) {
@@ -398,6 +405,7 @@ function getGifts() {
 
 function saveGifts(gifts) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(gifts));
+  scheduleGithubPublish();
 }
 
 function getDisclaimer() {
@@ -411,10 +419,12 @@ function saveDisclaimer(disclaimer) {
 
   if (!text) {
     localStorage.removeItem(DISCLAIMER_KEY);
+    scheduleGithubPublish();
     return;
   }
 
   localStorage.setItem(DISCLAIMER_KEY, text);
+  scheduleGithubPublish();
 }
 
 function getVisitorComments() {
@@ -504,6 +514,7 @@ function renderHome() {
   addMenu.hidden = true;
   document.querySelector("#shareWishlistButton").hidden = !isEditorMode;
   document.querySelector("#exportWishlistDataButton").hidden = !isEditorMode;
+  document.querySelector("#publishWishlistDataButton").hidden = !isEditorMode;
   addButton.addEventListener("click", () => {
     if (!isEditorMode) {
       return;
@@ -526,6 +537,7 @@ function renderHome() {
   heroDisclaimerButton.hidden = !disclaimer;
   document.querySelector("#shareWishlistButton").addEventListener("click", shareWishlist);
   document.querySelector("#exportWishlistDataButton").addEventListener("click", exportWishlistData);
+  document.querySelector("#publishWishlistDataButton").addEventListener("click", publishWishlistData);
   document.querySelector("#copyShareLinkButton").addEventListener("click", copyVisibleShareLink);
   document.querySelector("#shareLinkInput").addEventListener("focus", (event) => {
     event.target.select();
@@ -1652,12 +1664,7 @@ async function copyVisibleShareLink() {
 }
 
 function exportWishlistData() {
-  const data = {
-    version: new Date().toISOString(),
-    disclaimer: getDisclaimer(),
-    gifts: getGifts().map(getShareableGift),
-  };
-  const js = `window.WISHLIST_DATA = ${JSON.stringify(data, null, 2)};\n`;
+  const js = createWishlistDataSource();
   const blob = new Blob([js], { type: "text/javascript;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
@@ -1669,6 +1676,138 @@ function exportWishlistData() {
   link.remove();
   URL.revokeObjectURL(url);
   setShareStatus("Файл wishlist-data.js скачан. Его можно опубликовать в GitHub.");
+}
+
+async function publishWishlistData(options = {}) {
+  const { promptForToken = true, silent = false } = options;
+  const token = getGithubToken(promptForToken);
+
+  if (!token) {
+    if (!silent) {
+      setShareStatus("Публикация отменена: нужен GitHub token.");
+    }
+
+    return;
+  }
+
+  if (githubPublishInFlight) {
+    scheduleGithubPublish(1800);
+    return;
+  }
+
+  githubPublishInFlight = true;
+
+  if (!silent) {
+    setShareStatus("Публикую wishlist в GitHub...");
+  }
+
+  try {
+    const path = encodeURIComponent(GITHUB_DATA_PATH);
+    const apiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`;
+    const dataSource = createWishlistDataSource();
+    const currentFileResponse = await fetch(`${apiUrl}?ref=${encodeURIComponent(GITHUB_BRANCH)}`, {
+      headers: getGithubHeaders(token),
+    });
+
+    if (!currentFileResponse.ok) {
+      throw createGithubError("Не удалось прочитать текущий файл", currentFileResponse.status);
+    }
+
+    const currentFile = await currentFileResponse.json();
+    const updateResponse = await fetch(apiUrl, {
+      method: "PUT",
+      headers: getGithubHeaders(token),
+      body: JSON.stringify({
+        branch: GITHUB_BRANCH,
+        message: "Publish wishlist data",
+        content: stringToBase64(dataSource),
+        sha: currentFile.sha,
+      }),
+    });
+
+    if (!updateResponse.ok) {
+      const error = await updateResponse.json().catch(() => ({}));
+
+      throw createGithubError(error.message || "GitHub не принял обновление", updateResponse.status);
+    }
+
+    setShareStatus("Wishlist опубликован. Инкогнито обновится после кэша GitHub Pages.");
+  } catch (error) {
+    if (error.status === 401 || error.status === 403) {
+      localStorage.removeItem(GITHUB_TOKEN_KEY);
+    }
+
+    setShareStatus(`Не получилось опубликовать: ${error.message}`);
+  } finally {
+    githubPublishInFlight = false;
+  }
+}
+
+function createWishlistDataSource() {
+  const data = {
+    version: new Date().toISOString(),
+    disclaimer: getDisclaimer(),
+    gifts: getGifts().map(getShareableGift),
+  };
+
+  return `window.WISHLIST_DATA = ${JSON.stringify(data, null, 2)};\n`;
+}
+
+function scheduleGithubPublish(delay = 2200) {
+  if (!localStorage.getItem(GITHUB_TOKEN_KEY)) {
+    return;
+  }
+
+  window.clearTimeout(githubPublishTimer);
+  githubPublishTimer = window.setTimeout(() => {
+    publishWishlistData({ promptForToken: false, silent: true });
+  }, delay);
+}
+
+function getGithubToken(allowPrompt = true) {
+  const storedToken = localStorage.getItem(GITHUB_TOKEN_KEY);
+  const token =
+    storedToken ||
+    (allowPrompt
+      ? prompt(
+          "Вставь GitHub token. Не отправляй его в чат. Нужен доступ только к репозиторию whishlist: Contents Read and write.",
+        )
+      : "");
+
+  const normalizedToken = token ? token.trim() : "";
+
+  if (normalizedToken && !storedToken) {
+    localStorage.setItem(GITHUB_TOKEN_KEY, normalizedToken);
+  }
+
+  return normalizedToken;
+}
+
+function getGithubHeaders(token) {
+  return {
+    Accept: "application/vnd.github+json",
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+    "X-GitHub-Api-Version": "2022-11-28",
+  };
+}
+
+function createGithubError(message, status) {
+  const error = new Error(`${message}: ${status}`);
+  error.status = status;
+  return error;
+}
+
+function stringToBase64(value) {
+  const bytes = new TextEncoder().encode(value);
+  let binary = "";
+  const chunkSize = 0x8000;
+
+  for (let index = 0; index < bytes.length; index += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(index, index + chunkSize));
+  }
+
+  return btoa(binary);
 }
 
 function createShareLink(gifts) {

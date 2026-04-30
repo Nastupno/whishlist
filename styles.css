@@ -420,7 +420,9 @@ h2 {
   flex: 0 0 auto;
 }
 
-.home-board .share-button {
+.home-board .share-button,
+.home-board .export-data-button,
+.home-board .publish-data-button {
   flex: 0 0 auto;
 }
 
@@ -2056,7 +2058,9 @@ textarea {
   }
 
   .home-board .primary-button,
-  .home-board .share-button {
+  .home-board .share-button,
+  .home-board .export-data-button,
+  .home-board .publish-data-button {
     width: 48px;
     min-width: 48px;
     padding: 0;
@@ -2066,7 +2070,9 @@ textarea {
   }
 
   .home-board .primary-button svg,
-  .home-board .share-button svg {
+  .home-board .share-button svg,
+  .home-board .export-data-button svg,
+  .home-board .publish-data-button svg {
     flex: 0 0 auto;
     width: 20px;
     height: 20px;
