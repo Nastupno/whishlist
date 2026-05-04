@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Photo Portfolio</title>
+    <link rel="stylesheet" href="styles.css?v=20260504-vitrine-en-3" />
+  </head>
+  <body>
+    <div class="intro" id="intro" aria-label="Loading portfolio">
+      <div class="camera" aria-hidden="true">
+        <div class="camera-body">
+          <div class="camera-prism"></div>
+          <div class="camera-lens">
+            <span></span>
+          </div>
+          <div class="camera-flash"></div>
+        </div>
+      </div>
+      <div class="flash-star" aria-hidden="true"></div>
+      <div class="flash" aria-hidden="true"></div>
+      <p>portfolio</p>
+    </div>
+
+    <main class="site-shell">
+      <header class="hero" id="home">
+        <nav class="nav" aria-label="Main navigation">
+          <a class="logo" href="#home">Anastasia Photo</a>
+          <div class="nav-links">
+            <a href="#gallery">Gallery</a>
+          </div>
+          <div class="mode-toggle" aria-label="Portfolio mode">
+            <button class="mode-button is-active" type="button" data-mode="viewer">Viewer</button>
+            <button class="mode-button" type="button" data-mode="editor">Editor</button>
+          </div>
+        </nav>
+
+        <section class="hero-grid">
+          <div class="hero-copy">
+            <p class="eyebrow">quiet photo space</p>
+            <h1>Photography without the extra noise</h1>
+            <p>
+              A calm place for favorite frames: a little air, soft light, and a
+              viewing flow that invites you to slow down.
+            </p>
+            <div class="hero-actions">
+              <a class="primary-link" href="#gallery">View work</a>
+              <button class="ghost-button editor-only" id="openUpload" type="button">New photo</button>
+            </div>
+            <div class="hero-stats" aria-label="Portfolio statistics">
+              <span><strong id="totalPhotos">0</strong> frames</span>
+              <span><strong id="totalCategories">0</strong> mood</span>
+              <span><strong>01</strong> story</span>
+            </div>
+          </div>
+
+          <div class="hero-collage" id="heroCollage" aria-label="Portfolio collage"></div>
+        </section>
+      </header>
+
+      <section class="section intro-text" id="about">
+        <div>
+          <p class="eyebrow">about</p>
+          <h2>Less interface, more feeling</h2>
+        </div>
+        <p>
+          This portfolio does not pretend to be huge. It quietly presents
+          selected photographs and lets each one open into a slower, larger view.
+        </p>
+      </section>
+
+      <section class="portfolio-strip" aria-label="Photography directions">
+        <article>
+          <span>01</span>
+          <h3>Portraits</h3>
+          <p>People, emotion, soft light, and the mood of a frame.</p>
+        </article>
+        <article>
+          <span>02</span>
+          <h3>Series</h3>
+          <p>Small visual stories built from a few selected images.</p>
+        </article>
+        <article>
+          <span>03</span>
+          <h3>Details</h3>
+          <p>Texture, objects, color, and quiet visual discoveries.</p>
+        </article>
+      </section>
+
+      <section class="section gallery-section" id="gallery">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">gallery</p>
+            <h2>My photographs</h2>
+          </div>
+          <button class="primary-button editor-only" id="openUploadSecond" type="button">New photo</button>
+        </div>
+
+        <div class="editor-panel editor-only">
+          <div>
+            <strong>Editor mode</strong>
+            <p>Add photographs here. Viewer mode keeps the portfolio calm and clean.</p>
+          </div>
+          <button class="ghost-button" id="openUploadThird" type="button">Add frame</button>
+        </div>
+
+        <div class="gallery" id="galleryGrid" aria-live="polite"></div>
+      </section>
+
+      <section class="section contact" id="contact">
+        <p class="eyebrow">contact</p>
+        <h2>For shoots and ideas</h2>
+        <a href="mailto:hello@example.com">hello@example.com</a>
+      </section>
+    </main>
+
+    <dialog class="upload-dialog" id="uploadDialog">
+      <form class="upload-form" id="uploadForm" method="dialog">
+        <div class="dialog-head">
+          <div>
+            <p class="eyebrow">new photo</p>
+            <h2>Add a photograph</h2>
+          </div>
+          <button class="icon-button" id="closeUpload" type="button" aria-label="Close">
+            <span></span>
+          </button>
+        </div>
+
+        <label class="file-drop">
+          <input id="photoInput" type="file" accept="image/*" required />
+          <span id="fileText">Choose a photograph</span>
+        </label>
+
+        <label>
+          Title
+          <input id="titleInput" type="text" maxlength="70" placeholder="For example: Morning by the sea" required />
+        </label>
+
+        <label>
+          Category
+          <select id="categoryInput">
+            <option>Portrait</option>
+            <option>Nature</option>
+            <option>City</option>
+            <option>Details</option>
+          </select>
+        </label>
+
+        <label>
+          Description
+          <textarea id="descriptionInput" maxlength="140" placeholder="A short story behind the frame"></textarea>
+        </label>
+
+        <button class="primary-button" type="submit">Save</button>
+      </form>
+    </dialog>
+
+    <dialog class="lightbox" id="lightbox">
+      <button class="icon-button lightbox-close" id="closeLightbox" type="button" aria-label="Close">
+        <span></span>
+      </button>
+      <figure>
+        <img id="lightboxImage" src="" alt="" />
+        <figcaption>
+          <span id="lightboxCategory"></span>
+          <strong id="lightboxTitle"></strong>
+          <p id="lightboxDescription"></p>
+        </figcaption>
+      </figure>
+    </dialog>
+
+    <script src="app.js?v=20260504-vitrine-en-3"></script>
+  </body>
+</html>
