@@ -81,7 +81,7 @@ textarea:focus-visible {
   background: radial-gradient(circle, rgba(255, 255, 255, 0.08), transparent 58%);
   opacity: 0;
   transform: translate(-50%, -50%) scale(0.72);
-  animation: softPulse 1.45s ease both;
+  animation: softPulse 1.85s ease both;
 }
 
 .intro.is-hidden {
@@ -99,7 +99,7 @@ textarea:focus-visible {
   font-weight: 900;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  animation: introLabel 1.45s ease both;
+  animation: introLabel 1.85s ease both;
 }
 
 .camera {
@@ -107,7 +107,7 @@ textarea:focus-visible {
   z-index: 2;
   width: clamp(190px, 42vw, 360px);
   aspect-ratio: 1.18;
-  animation: cameraPop 1.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: cameraPop 1.85s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .flash-star {
@@ -140,7 +140,7 @@ textarea:focus-visible {
   transform: translate(-50%, -50%) scale(0.26) rotate(-8deg);
   transform-origin: center;
   filter: drop-shadow(0 0 24px rgba(255, 255, 255, 0.32));
-  animation: starBurst 1.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: starBurst 1.85s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .camera-body {
@@ -148,7 +148,7 @@ textarea:focus-visible {
   inset: 24% 3% 12%;
   border-radius: 9px 9px 13px 13px;
   background: #fff;
-  animation: cameraGlow 1.45s ease both;
+  animation: cameraGlow 1.85s ease both;
 }
 
 .camera-body::before,
@@ -196,7 +196,7 @@ textarea:focus-visible {
   border-radius: 50%;
   background: #fff;
   transform: translate(-50%, -50%);
-  animation: lensFocus 1.45s ease both;
+  animation: lensFocus 1.85s ease both;
 }
 
 .camera-lens span {
@@ -204,7 +204,7 @@ textarea:focus-visible {
   aspect-ratio: 1;
   border-radius: 50%;
   background: #fff;
-  animation: shutterBlink 1.45s ease both;
+  animation: shutterBlink 1.85s ease both;
 }
 
 .camera-flash {
@@ -215,7 +215,7 @@ textarea:focus-visible {
   aspect-ratio: 1;
   border-radius: 50%;
   background: #000;
-  animation: flashBulb 1.45s ease both;
+  animation: flashBulb 1.85s ease both;
 }
 
 .flash {
@@ -223,7 +223,26 @@ textarea:focus-visible {
   inset: 0;
   background: white;
   opacity: 0;
-  animation: screenFlash 1.45s ease both;
+  animation: screenFlash 1.85s ease both;
+}
+
+.photo-reveal {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  top: 50%;
+  width: min(72vw, 520px);
+  aspect-ratio: 4 / 3;
+  border: 10px solid rgba(255, 255, 255, 0.96);
+  border-bottom-width: 34px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.68), rgba(255, 255, 255, 0.18)),
+    rgba(255, 255, 255, 0.34);
+  box-shadow: 0 24px 90px rgba(255, 255, 255, 0.14);
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.58) rotate(-5deg);
+  transform-origin: center;
+  animation: photoReveal 1.85s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .site-shell {
@@ -236,6 +255,34 @@ textarea:focus-visible {
 body.is-ready .site-shell {
   opacity: 1;
   transform: translateY(0);
+}
+
+body.is-ready .nav {
+  animation: riseIn 0.78s ease both;
+}
+
+body.is-ready .hero-copy .eyebrow {
+  animation: riseIn 0.7s 0.08s ease both;
+}
+
+body.is-ready .hero-copy h1 {
+  animation: riseIn 0.82s 0.14s ease both;
+}
+
+body.is-ready .hero-copy p:not(.eyebrow) {
+  animation: riseIn 0.82s 0.22s ease both;
+}
+
+body.is-ready .hero-actions {
+  animation: riseIn 0.82s 0.3s ease both;
+}
+
+body.is-ready .hero-stats {
+  animation: riseIn 0.82s 0.38s ease both;
+}
+
+body.is-ready .hero-collage {
+  animation: collageEntrance 1s 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .hero {
@@ -459,6 +506,16 @@ h2 {
 }
 
 .collage-frame {
+  transition: transform 0.34s ease, border-color 0.34s ease, filter 0.34s ease;
+}
+
+.collage-frame:hover {
+  border-color: rgba(213, 170, 112, 0.72);
+  filter: brightness(1.08);
+  transform: translateY(-4px) scale(1.012);
+}
+
+.collage-frame {
   padding: 0;
   cursor: zoom-in;
 }
@@ -521,6 +578,21 @@ h2 {
 .collage-frame:nth-child(5) {
   grid-column: 4 / span 1;
   grid-row: 5 / span 2;
+}
+
+body.is-ready .collage-frame:nth-child(1),
+body.is-ready .collage-empty:nth-child(1) {
+  animation: frameFloat 8s 1.4s ease-in-out infinite;
+}
+
+body.is-ready .collage-frame:nth-child(2),
+body.is-ready .collage-empty:nth-child(2) {
+  animation: frameFloat 7s 1.8s ease-in-out infinite reverse;
+}
+
+body.is-ready .collage-frame:nth-child(3),
+body.is-ready .collage-empty:nth-child(3) {
+  animation: frameFloat 9s 2s ease-in-out infinite;
 }
 
 .featured-shot img,
@@ -643,6 +715,10 @@ h2 {
 .photo-card:hover {
   border-color: rgba(213, 170, 112, 0.66);
   transform: translateY(-3px);
+}
+
+body.is-ready .photo-card {
+  animation: galleryLift 0.78s ease both;
 }
 
 .photo-card.is-featured,
@@ -910,33 +986,45 @@ h2 {
 
 @keyframes cameraPop {
   0% {
-    opacity: 1;
-    transform: translateY(12px) scale(0.94);
+    opacity: 0;
+    transform: translateY(36px) scale(0.78) rotate(-4deg);
   }
-  28%,
-  56% {
+  18% {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0) scale(1.02) rotate(0deg);
   }
-  66% {
+  46% {
     opacity: 1;
-    transform: translateY(0) scale(1.012);
+    transform: translateY(0) scale(1) rotate(0.5deg);
+  }
+  58% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.045) rotate(-0.4deg);
+  }
+  76% {
+    opacity: 0.92;
+    transform: translateY(-8px) scale(0.94) rotate(1deg);
   }
   100% {
     opacity: 0;
-    transform: translateY(-18px) scale(0.98);
+    transform: translateY(-24px) scale(0.9);
   }
 }
 
 @keyframes lensFocus {
   0%,
-  36% {
+  34% {
     box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
   }
-  58% {
+  52% {
     box-shadow:
       0 0 0 12px rgba(255, 255, 255, 0.22),
       0 0 64px 14px rgba(255, 255, 255, 0.32);
+  }
+  60% {
+    box-shadow:
+      0 0 0 24px rgba(255, 255, 255, 0.1),
+      0 0 110px 30px rgba(255, 255, 255, 0.42);
   }
   100% {
     box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
@@ -945,15 +1033,15 @@ h2 {
 
 @keyframes shutterBlink {
   0%,
-  44% {
+  40% {
     transform: scale(1);
     opacity: 1;
   }
-  56% {
-    transform: scale(0.64);
+  54% {
+    transform: scale(0.54);
     opacity: 0.85;
   }
-  70%,
+  66%,
   100% {
     transform: scale(1);
     opacity: 1;
@@ -962,14 +1050,14 @@ h2 {
 
 @keyframes flashBulb {
   0%,
-  50% {
+  48% {
     background: #000;
   }
-  58% {
+  56% {
     background: #fff;
     box-shadow:
       0 0 30px 12px rgba(255, 255, 255, 1),
-      0 0 120px 58px rgba(255, 255, 255, 0.9);
+      0 0 140px 66px rgba(255, 255, 255, 0.96);
   }
   100% {
     background: #000;
@@ -978,17 +1066,17 @@ h2 {
 
 @keyframes screenFlash {
   0%,
-  50% {
+  48% {
     opacity: 0;
   }
-  58% {
+  56% {
     opacity: 1;
   }
   64% {
-    opacity: 0.86;
+    opacity: 0.74;
   }
-  84% {
-    opacity: 0.12;
+  82% {
+    opacity: 0.04;
   }
   100% {
     opacity: 0;
@@ -997,31 +1085,31 @@ h2 {
 
 @keyframes starBurst {
   0%,
-  47% {
+  44% {
     opacity: 0;
     transform: translate(-50%, -50%) scale(0.22) rotate(-10deg);
   }
-  55% {
+  56% {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    transform: translate(-50%, -50%) scale(1.04) rotate(4deg);
   }
   68% {
     opacity: 0.72;
-    transform: translate(-50%, -50%) scale(1.08) rotate(3deg);
+    transform: translate(-50%, -50%) scale(1.16) rotate(-6deg);
   }
   100% {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(1.2) rotate(8deg);
+    transform: translate(-50%, -50%) scale(1.32) rotate(12deg);
   }
 }
 
 @keyframes cameraGlow {
   0%,
-  50% {
+  48% {
     filter: none;
     box-shadow: 0 24px 80px rgba(255, 255, 255, 0.06);
   }
-  58% {
+  56% {
     filter: brightness(1.25);
     box-shadow:
       0 0 46px 18px rgba(255, 255, 255, 0.72),
@@ -1033,13 +1121,78 @@ h2 {
   }
 }
 
+@keyframes photoReveal {
+  0%,
+  58% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.52) rotate(-9deg);
+  }
+  68% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.02) rotate(2deg);
+  }
+  84% {
+    opacity: 0.78;
+    transform: translate(-50%, -55%) scale(1.07) rotate(-1deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -62%) scale(0.98) rotate(0deg);
+  }
+}
+
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes collageEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.96);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes frameFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+@keyframes galleryLift {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes softPulse {
   0%,
-  42% {
+  36% {
     opacity: 0;
     transform: translate(-50%, -50%) scale(0.72);
   }
-  58% {
+  56% {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
   }
@@ -1051,11 +1204,11 @@ h2 {
 
 @keyframes introLabel {
   0%,
-  46% {
+  38% {
     opacity: 0;
   }
-  54%,
-  70% {
+  48%,
+  68% {
     opacity: 1;
   }
   100% {

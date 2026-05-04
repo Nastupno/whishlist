@@ -1,6 +1,47 @@
-const STORAGE_KEY = "lensfolio:photos:v3";
+const STORAGE_KEY = "lensfolio:photos:v4";
 const MODE_KEY = "lensfolio:mode";
-const starterPhotos = [];
+const starterPhotos = [
+  {
+    id: "sample-window-light",
+    title: "Window light",
+    category: "Portrait",
+    description: "Soft daylight, quiet framing, and a calm visual rhythm.",
+    src: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=1200&q=80",
+    locked: true,
+  },
+  {
+    id: "sample-coastline",
+    title: "Coastline study",
+    category: "Nature",
+    description: "A slow frame with open air, texture, and muted color.",
+    src: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
+    locked: true,
+  },
+  {
+    id: "sample-street",
+    title: "Late street",
+    category: "City",
+    description: "A small city moment with shadows, movement, and atmosphere.",
+    src: "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80",
+    locked: true,
+  },
+  {
+    id: "sample-details",
+    title: "Quiet detail",
+    category: "Details",
+    description: "A close fragment that keeps the mood of the day.",
+    src: "https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&w=1200&q=80",
+    locked: true,
+  },
+  {
+    id: "sample-soft-room",
+    title: "Soft room",
+    category: "Series",
+    description: "Warm interior light for a gentle portfolio rhythm.",
+    src: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
+    locked: true,
+  },
+];
 
 const intro = document.querySelector("#intro");
 const galleryGrid = document.querySelector("#galleryGrid");
